@@ -6,10 +6,10 @@ Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
 enum SlideDirection {
@@ -44,6 +44,12 @@ class SlidingUpPanel extends StatefulWidget {
   /// This Widget automatically sizes itself
   /// to fill the screen.
   final Widget? body;
+
+  /// The height of the body.
+  final double? bodyHeight;
+
+  /// The width of the body.
+  final double? bodyWidth;
 
   /// Optional persistent widget that floats above the [panel] and attaches
   /// to the top of the [panel]. Content at the top of the panel will be covered
@@ -164,6 +170,8 @@ class SlidingUpPanel extends StatefulWidget {
       this.panel,
       this.panelBuilder,
       this.body,
+      this.bodyHeight,
+      this.bodyWidth,
       this.collapsed,
       this.minHeight = 100.0,
       this.maxHeight = 500.0,
@@ -264,8 +272,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                   );
                 },
                 child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
+                  height:
+                      widget.bodyHeight ?? MediaQuery.of(context).size.height,
+                  width: widget.bodyWidth ?? MediaQuery.of(context).size.width,
                   child: widget.body,
                 ),
               )
