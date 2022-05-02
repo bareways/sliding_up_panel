@@ -6,10 +6,10 @@ Copyright: © 2020, Akshath Jain. All rights reserved.
 Licensing: More information can be found here: https://github.com/akshathjain/sliding_up_panel/blob/master/LICENSE
 */
 
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
 enum SlideDirection {
@@ -40,10 +40,21 @@ class SlidingUpPanel extends StatefulWidget {
   /// This fades out as the panel is opened.
   final Widget? collapsed;
 
+  /// Keep the Widget displayed overtop/below the [panel] even when not collapsed.
+  /// Does not fade the panel out when fully opened.
+  /// Defaults to false
+  final bool alwaysShowCollapsedWidget;
+
   /// The Widget that lies underneath the sliding panel.
   /// This Widget automatically sizes itself
   /// to fill the screen.
   final Widget? body;
+
+  /// The height of the body.
+  final double? bodyHeight;
+
+  /// The width of the body.
+  final double? bodyWidth;
 
   /// Optional persistent widget that floats above the [panel] and attaches
   /// to the top of the [panel]. Content at the top of the panel will be covered
@@ -164,7 +175,10 @@ class SlidingUpPanel extends StatefulWidget {
       this.panel,
       this.panelBuilder,
       this.body,
+      this.bodyHeight,
+      this.bodyWidth,
       this.collapsed,
+      this.alwaysShowCollapsedWidget = false,
       this.minHeight = 100.0,
       this.maxHeight = 500.0,
       this.snapPoint,
@@ -264,8 +278,9 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                   );
                 },
                 child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
+                  height:
+                      widget.bodyHeight ?? MediaQuery.of(context).size.height,
+                  width: widget.bodyWidth ?? MediaQuery.of(context).size.width,
                   child: widget.body,
                 ),
               )
@@ -333,10 +348,14 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                       //open panel
                       Positioned(
                           top: widget.slideDirection == SlideDirection.UP
-                              ? 0.0
+                              ? widget.alwaysShowCollapsedWidget
+                                  ? 0.0 - widget.minHeight
+                                  : 0
                               : null,
                           bottom: widget.slideDirection == SlideDirection.DOWN
-                              ? 0.0
+                              ? widget.alwaysShowCollapsedWidget
+                                  ? 0.0 + widget.minHeight
+                                  : 0
                               : null,
                           width: MediaQuery.of(context).size.width -
                               (widget.margin != null
@@ -396,18 +415,21 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                                 : 0),
                         child: Container(
                           height: widget.minHeight,
+                          // child: widget.collapsed ??  Container()
                           child: widget.collapsed == null
                               ? Container()
-                              : FadeTransition(
-                                  opacity:
-                                      Tween(begin: 1.0, end: 0.0).animate(_ac),
+                              : widget.alwaysShowCollapsedWidget
+                                  ? widget.collapsed
+                                  : FadeTransition(
+                                      opacity: Tween(begin: 1.0, end: 0.0)
+                                          .animate(_ac),
 
-                                  // if the panel is open ignore pointers (touch events) on the collapsed
-                                  // child so that way touch events go through to whatever is underneath
-                                  child: IgnorePointer(
-                                      ignoring: _isPanelOpen,
-                                      child: widget.collapsed),
-                                ),
+                                      // if the panel is open ignore pointers (touch events) on the collapsed
+                                      // child so that way touch events go through to whatever is underneath
+                                      child: IgnorePointer(
+                                          ignoring: _isPanelOpen,
+                                          child: widget.collapsed),
+                                    ),
                         ),
                       ),
                     ],
