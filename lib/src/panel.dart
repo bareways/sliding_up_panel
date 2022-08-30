@@ -50,12 +50,6 @@ class SlidingUpPanel extends StatefulWidget {
   /// to fill the screen.
   final Widget? body;
 
-  /// The height of the body.
-  final double? bodyHeight;
-
-  /// The width of the body.
-  final double? bodyWidth;
-
   /// Optional persistent widget that floats above the [panel] and attaches
   /// to the top of the [panel]. Content at the top of the panel will be covered
   /// by this widget. Add padding to the bottom of the `panel` to
@@ -67,6 +61,12 @@ class SlidingUpPanel extends StatefulWidget {
   /// will be covered by this widget. Add padding to the bottom of the `panel`
   /// to avoid coverage.
   final Widget? footer;
+
+  /// The height of the component.
+  final double? height;
+
+  /// The width of the component.
+  final double? width;
 
   /// The height of the sliding panel when fully collapsed.
   final double minHeight;
@@ -175,8 +175,8 @@ class SlidingUpPanel extends StatefulWidget {
       this.panel,
       this.panelBuilder,
       this.body,
-      this.bodyHeight,
-      this.bodyWidth,
+      this.height,
+      this.width,
       this.collapsed,
       this.alwaysShowCollapsedWidget = false,
       this.minHeight = 100.0,
@@ -279,8 +279,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                 },
                 child: Container(
                   height:
-                      widget.bodyHeight ?? MediaQuery.of(context).size.height,
-                  width: widget.bodyWidth ?? MediaQuery.of(context).size.width,
+                      widget.height ?? MediaQuery.of(context).size.height,
+                  width: widget.width ?? MediaQuery.of(context).size.width,
                   child: widget.body,
                 ),
               )
@@ -305,8 +305,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                     animation: _ac,
                     builder: (context, _) {
                       return Container(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
+                        height: widget.height ?? MediaQuery.of(context).size.height,
+                        width: widget.width ?? MediaQuery.of(context).size.width,
 
                         //set color to null so that touch events pass through
                         //to the body when the panel is closed, otherwise,
@@ -357,7 +357,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                                   ? 0.0 + widget.minHeight
                                   : 0
                               : null,
-                          width: MediaQuery.of(context).size.width -
+                          width: (widget.width ?? MediaQuery.of(context).size.width) -
                               (widget.margin != null
                                   ? widget.margin!.horizontal
                                   : 0) -
@@ -406,7 +406,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                         bottom: widget.slideDirection == SlideDirection.DOWN
                             ? 0.0
                             : null,
-                        width: MediaQuery.of(context).size.width -
+                        width: (widget.width ?? MediaQuery.of(context).size.width) -
                             (widget.margin != null
                                 ? widget.margin!.horizontal
                                 : 0) -
